@@ -52,7 +52,7 @@ class Database:
         yesterday = int(time.time()) - (24 * 60 * 60)
         command = "DELETE FROM catalog WHERE latest_time < :yesterday"
         self.cursor.execute(command, {"yesterday": yesterday})
-        return self.cursor.commit()
+        self.connection.commit()
 
     def report(self):
         command = """SELECT
