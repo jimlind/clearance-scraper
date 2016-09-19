@@ -48,6 +48,12 @@ class Database:
         self.cursor.execute(select)
         return self.cursor.fetchall()
 
+    def cleanOldItems(self):
+        yesterday = int(time.time()) - (24 * 60 * 60)
+        command = "DELETE FROM catalog WHERE latest_time < :yesterday"
+        self.cursor.execute(command, {"yesterday": yesterday})
+        return self.cursor.commit()
+
     def report(self):
         command = """SELECT
             (SELECT COUNT(sku) FROM catalog WHERE previous_time IS NULL)
