@@ -23,6 +23,7 @@ while categoryBuilder.parse(source):
     print(url)
     source = Browser().getSource(url)
 
+database.cleanOldItems()
 reportData = database.report()
 
 message = 'Scrape Complete!\n'
