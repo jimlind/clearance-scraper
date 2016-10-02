@@ -14,14 +14,18 @@ database.updateTime()
 categoryBuilder = CategoryBuilder(database)
 telegramBot = Bot(token = config.get('bot', 'token'))
 chatId = config.get('bot', 'chat')
-
 url = config.get('site', 'start')
-print(url)
-source = Browser().getSource(url)
+
+rawProxyList = config.get('proxy', 'list').split()
+proxyList = []
+for rawProxy in rawProxyList:
+    proxyList.append(rawProxy.strip())
+browser = Browser(proxyList)
+
+source = browser.getSource(url)
 while categoryBuilder.parse(source):
     url = categoryBuilder.getNextUrl()
-    print(url)
-    source = Browser().getSource(url)
+    source = browser.getSource(url)
 
 database.cleanOldItems()
 reportData = database.report()
@@ -32,7 +36,6 @@ message += str(reportData[1]) + ' Products Avaiable\n'
 message += str(reportData[2]) + ' Products Eliglble for Delete'
 
 if message:
-    print(message)
     telegramBot.sendMessage(chat_id=chatId, text=message)
 
 productBuilder = ProductBuilder()
@@ -48,5 +51,4 @@ for data in database.getNewUrlList():
         message += item['p'] + ' :: ' + item['d'] + '\n'
 
     if message:
-        print(url)
         telegramBot.sendMessage(chat_id=chatId, text=message)
