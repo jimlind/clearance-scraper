@@ -16,15 +16,15 @@ class CategoryBuilder:
 
         for link in linkList:
             href = self.extractUrl(link)
-            if href.endswith('clearance=true'):
-                self.process(href, link)        
+            if (href.find('clearance=true') > 0):
+                self.process(href, link)
 
         link = soup.find('a', class_='js-next-page')
-        linkFound = link is not None        
-        
+
+        linkFound = link is not None
         if linkFound:
             self.nextUrl = self.extractUrl(link)
-
+ 
         return linkFound
 
     def process(self, href, link):
