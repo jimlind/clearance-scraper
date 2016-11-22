@@ -32,7 +32,7 @@ while nextCategoryAvailable:
     nextCategoryAvailable = categoryBuilder.parse(source)
     url = categoryBuilder.getNextUrl()
 
-# database.cleanOldItems()
+database.cleanOldItems()
 reportData = database.report()
 
 message = 'Scrape Complete!\n'
