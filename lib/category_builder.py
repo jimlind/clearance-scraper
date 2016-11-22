@@ -12,7 +12,7 @@ class CategoryBuilder:
 
     def parse(self, htmlString):
         soup = BeautifulSoup(htmlString, 'html.parser')
-        linkList = soup.find_all('a', class_='productbox')
+        linkList = soup.find_all('a', class_='js-prod-content')
 
         for link in linkList:
             href = self.extractUrl(link)
@@ -20,13 +20,12 @@ class CategoryBuilder:
                 self.process(href, link)
 
         link = soup.find('a', class_='js-next-page')
-
-        linkFound = link is not None
-        if linkFound:
+        if link is not None:
             self.nextUrl = self.extractUrl(link)
- 
-        return linkFound
+            return True
 
+        return False
+ 
     def process(self, href, link):
         self.database.upsertItem(link.get('data-sku'), href)
 
