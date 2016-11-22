@@ -14,34 +14,41 @@ database.updateTime()
 categoryBuilder = CategoryBuilder(database)
 telegramBot = Bot(token = config.get('bot', 'token'))
 chatId = config.get('bot', 'chat')
-url = config.get('site', 'start')
 
 rawProxyList = config.get('proxy', 'list').split()
 proxyList = []
 for rawProxy in rawProxyList:
     proxyList.append(rawProxy.strip())
-browser = Browser(proxyList)
+check = config.get('site', 'check')
+browser = Browser(proxyList, check)
 
-source = browser.getSource(url)
-while categoryBuilder.parse(source):
-    url = categoryBuilder.getNextUrl()
+nextCategoryAvailable = True
+url = config.get('site', 'start')
+while nextCategoryAvailable:
+    browser.setup()
     source = browser.getSource(url)
+    browser.shutdown()
 
-database.cleanOldItems()
+    nextCategoryAvailable = categoryBuilder.parse(source)
+    url = categoryBuilder.getNextUrl()
+
+# database.cleanOldItems()
 reportData = database.report()
 
 message = 'Scrape Complete!\n'
 message += str(reportData[0]) + ' New Products Found\n'
 message += str(reportData[1]) + ' Products Avaiable\n'
 message += str(reportData[2]) + ' Products Eliglble for Delete'
-
-if message:
-    telegramBot.sendMessage(chat_id=chatId, text=message)
+telegramBot.sendMessage(chat_id=chatId, text=message)
 
 productBuilder = ProductBuilder()
 for data in database.getNewUrlList():
     url = data[0]
-    source = Browser().getSource(url)
+
+    browser.setup()    
+    source = browser.getSource(url)
+    browser.shutdown()
+
     product = productBuilder.parse(source)
     if ('href' in product and product['href']):
         telegramBot.sendPhoto(chat_id=chatId, photo=product['href'])
