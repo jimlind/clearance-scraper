@@ -5,7 +5,7 @@ import time
 import random
 
 class Browser:
- 
+
     proxyList = []
     check = ''
     mechBrowser = None
@@ -14,7 +14,7 @@ class Browser:
     def __init__(self, proxyList, check):
         self.proxyList = proxyList
         self.check = check
-        
+
     def setup(self):
         self.mechBrowser = mechanize.Browser()
         cookieJar = cookielib.LWPCookieJar()
@@ -44,8 +44,6 @@ class Browser:
 
     def getSourceOrFalse(self, url):
         proxyUrl = random.choice(self.proxyList) + '?b=24'
-        print('Proxy URL ' + proxyUrl)
-        print('Store URL ' + url)
 
 	try:
             self.mechBrowser.open(proxyUrl)
@@ -56,12 +54,12 @@ class Browser:
                     break
                 formCount = formCount+1
             self.mechBrowser.select_form(nr=formCount)
-        
+
             self.mechBrowser.form['u'] = url
             self.mechBrowser.submit()
         except:
             return self.fail(proxyUrl, 'Form Submission Failure')
- 
+
         try:
             source = self.mechBrowser.response().read()
         except:
