@@ -1,2 +1,3 @@
 settings.cfg
 *.pyc
+.remote-sync.json
