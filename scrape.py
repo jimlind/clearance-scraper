@@ -45,7 +45,7 @@ productBuilder = ProductBuilder()
 for data in database.getNewUrlList():
     url = data[0]
 
-    browser.setup()    
+    browser.setup()
     source = browser.getSource(url)
     browser.shutdown()
 
