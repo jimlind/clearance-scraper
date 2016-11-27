@@ -45,7 +45,7 @@ class Browser:
     def getSourceOrFalse(self, url):
         proxyUrl = random.choice(self.proxyList) + '?b=24'
 
-	try:
+        try:
             self.mechBrowser.open(proxyUrl)
 
             formCount = 0
