@@ -78,10 +78,6 @@ class Browser:
                 return self.fail(proxyUrl, 'Security Warning Override Failure')
 
         if (source.find(self.check) == -1):
-            f = open("source.txt","w")
-            f.write(source)
-            f.close()
-            print(self.check)
             return self.fail(proxyUrl, 'Source Verficiation Failure')
 
         return source
