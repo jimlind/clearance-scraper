@@ -69,7 +69,6 @@ class Browser:
         self.mechBrowser._factory.is_html = True
 
         if 'Security Warning' == self.mechBrowser.title():
-            print('**** Security Override')
             try:
                 self.mechBrowser.select_form(nr=0)
                 self.mechBrowser.submit()
