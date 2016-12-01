@@ -1,6 +1,7 @@
 #!/usr/bin/python
-import mechanize
 import cookielib
+import logging
+import mechanize
 import time
 import random
 
@@ -36,6 +37,7 @@ class Browser:
         time.sleep(self.courtesyTime + random.randint(1, self.courtesyTime))
 
     def getSource(self, url):
+        logging.getLogger('Browser').info('ScrapingURL:' + url)
         while (True):
             self.sleep()
             source = self.getSourceOrFalse(url)
@@ -46,6 +48,7 @@ class Browser:
         proxyUrl = random.choice(self.proxyList) + '?b=24'
 
         try:
+            logging.getLogger('Browser').info('ProxyUrl:' + proxyUrl)
             self.mechBrowser.open(proxyUrl)
 
             formCount = 0
@@ -82,10 +85,9 @@ class Browser:
 
         return source
 
-    # TODO: Actually Log These Failures
     def fail(self, proxyUrl, message):
-        print('Log Failure!')
-        print(proxyUrl)
-        print(message)
+        logger = logging.getLogger('Browser')
+        logger.warning('ProxyFailure:ProxyUrl:' + proxyUrl)
+        logger.warning('ProxyFailure:Message:' + message)
 
         return False
