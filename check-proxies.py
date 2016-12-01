@@ -1,7 +1,12 @@
-from datetime import datetime
-from ConfigParser import ConfigParser
-from lib.browser import Browser
+import logging
+
 from colorama import Fore, Back, Style
+from ConfigParser import ConfigParser
+from datetime import datetime
+from lib.browser import Browser
+
+logging.basicConfig(filename='browser.log', level=logging.DEBUG)
+logging.getLogger('Browser')
 
 config = ConfigParser()
 config.read('settings.cfg')
