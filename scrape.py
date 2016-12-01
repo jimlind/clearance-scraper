@@ -1,3 +1,5 @@
+import logging
+
 from ConfigParser import ConfigParser
 from lib.browser import Browser
 from lib.category_builder import CategoryBuilder
