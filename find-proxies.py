@@ -1,9 +1,14 @@
+import logging
 import mechanize
 
 from bs4 import BeautifulSoup
-from datetime import datetime
+from colorama import Fore, Back, Style
 from ConfigParser import ConfigParser
+from datetime import datetime
 from lib.browser import Browser
+
+logging.basicConfig(filename='browser.log', level=logging.DEBUG)
+logging.getLogger('Browser')
 
 def getMechanizeGoogle(agentString):
     mechBrowser = mechanize.Browser()
@@ -36,12 +41,13 @@ mechBrowser = getMechanizeGoogle(agentString)
 totalPages = 6
 googleResultList = []
 for i in range(totalPages):
+    print('Gathering data from page ' + str(i + 1) + '...')
     googleResultList = googleResultList + getAnchorList(mechBrowser)
     if i < (totalPages - 1):
         request = mechBrowser.click_link(text='Next')
         mechBrowser.open(request)
 mechBrowser.close()
-print('Found ' + str(len(googleResultList)) + ' results. We are going to test them now.')
+print('Found ' + str(len(googleResultList)) + ' results to test.')
 
 config = ConfigParser()
 config.read('settings.cfg')
@@ -61,5 +67,7 @@ for googleResult in googleResultList:
         continue;
 
     totalTime = endTime - startTime
-    totalSecondsString = str(totalTime.total_seconds())
-    print('It took ' + totalSecondsString + ' seconds to successfully use ' + proxyUrl)
+    message = Fore.GREEN + 'SUCCESS!' + Style.RESET_ALL + ' | '
+    message += Fore.WHITE + Back.BLUE + (' ' + str(totalTime.total_seconds()) + 's ').ljust(12) + Style.RESET_ALL + ' | '
+    message += proxyUrl
+    print(message)
