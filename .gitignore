@@ -1,3 +1,4 @@
 settings.cfg
+browser.log
 *.pyc
 .remote-sync.json
