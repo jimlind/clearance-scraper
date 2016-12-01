@@ -5,6 +5,9 @@ from lib.product_builder import ProductBuilder
 from lib.database import Database
 from telegram import Bot
 
+logging.basicConfig(filename='browser.log', level=logging.DEBUG)
+logging.getLogger('Browser')
+
 config = ConfigParser()
 config.read('settings.cfg')
 
