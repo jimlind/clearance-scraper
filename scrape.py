@@ -1,4 +1,4 @@
-import logging
+import lib.logger
 
 from ConfigParser import ConfigParser
 from lib.browser import Browser
@@ -7,8 +7,8 @@ from lib.product_builder import ProductBuilder
 from lib.database import Database
 from telegram import Bot
 
-logging.basicConfig(filename='browser.log', level=logging.WARNING)
-logging.getLogger('Browser')
+# Setup debug logging
+lib.logger.setupWarning();
 
 config = ConfigParser()
 config.read('settings.cfg')

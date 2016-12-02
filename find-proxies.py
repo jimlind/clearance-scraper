@@ -1,4 +1,4 @@
-import logging
+import lib.logger
 import mechanize
 
 from bs4 import BeautifulSoup
@@ -7,8 +7,8 @@ from ConfigParser import ConfigParser
 from datetime import datetime
 from lib.browser import Browser
 
-logging.basicConfig(filename='browser.log', level=logging.DEBUG)
-logging.getLogger('Browser')
+# Setup debug logging
+lib.logger.setupDebug();
 
 def getMechanizeGoogle(agentString):
     mechBrowser = mechanize.Browser()
