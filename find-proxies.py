@@ -1,5 +1,5 @@
-import lib.logger
 import mechanize
+import util.logger
 
 from bs4 import BeautifulSoup
 from colorama import Fore, Back, Style
@@ -8,7 +8,7 @@ from datetime import datetime
 from lib.browser import Browser
 
 # Setup debug logging
-lib.logger.setupDebug();
+util.logger.setupDebug();
 
 def getMechanizeGoogle(agentString):
     mechBrowser = mechanize.Browser()

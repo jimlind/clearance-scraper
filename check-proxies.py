@@ -1,4 +1,4 @@
-import lib.logger
+import util.logger
 
 from colorama import Fore, Back, Style
 from ConfigParser import ConfigParser
@@ -6,7 +6,7 @@ from datetime import datetime
 from lib.browser import Browser
 
 # Setup debug logging
-lib.logger.setupDebug();
+util.logger.setupDebug();
 
 config = ConfigParser()
 config.read('settings.cfg')

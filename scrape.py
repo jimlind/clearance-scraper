@@ -1,4 +1,4 @@
-import lib.logger
+import util.logger
 
 from ConfigParser import ConfigParser
 from lib.browser import Browser
@@ -8,7 +8,7 @@ from lib.database import Database
 from telegram import Bot
 
 # Setup debug logging
-lib.logger.setupWarning();
+util.logger.setupWarning();
 
 config = ConfigParser()
 config.read('settings.cfg')
