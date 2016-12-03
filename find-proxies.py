@@ -1,8 +1,8 @@
 import mechanize
+import util.display
 import util.logger
 
 from bs4 import BeautifulSoup
-from colorama import Fore, Back, Style
 from ConfigParser import ConfigParser
 from datetime import datetime
 from lib.browser import Browser
@@ -66,8 +66,5 @@ for googleResult in googleResultList:
     if (False == source):
         continue;
 
-    totalTime = endTime - startTime
-    message = Fore.GREEN + 'SUCCESS!' + Style.RESET_ALL + ' | '
-    message += Fore.WHITE + Back.BLUE + (' ' + str(totalTime.total_seconds()) + 's ').ljust(12) + Style.RESET_ALL + ' | '
-    message += proxyUrl
-    print(message)
+    seconds = (endTime - startTime).total_seconds()
+    util.display.success(str(seconds), proxyUrl)
