@@ -46,9 +46,9 @@ class Browser:
 
     def getSourceOrFalse(self, url):
         proxyUrl = random.choice(self.proxyList) + '?b=24'
+        logging.getLogger('Browser').info('Proxy Url : ' + proxyUrl)
 
         try:
-            logging.getLogger('Browser').info('Proxy Url : ' + proxyUrl)
             self.mechBrowser.open(proxyUrl)
 
             formCount = 0
@@ -64,7 +64,7 @@ class Browser:
             return self.fail(proxyUrl, 'Form Submission Failure')
 
         try:
-            source = self.mechBrowser.response().read()
+            source = self.mechBrowser.response().get_data()
         except:
             return self.fail(proxyUrl, 'Response Read Failure')
 
@@ -72,6 +72,7 @@ class Browser:
         self.mechBrowser._factory.is_html = True
 
         if 'Security Warning' == self.mechBrowser.title():
+            logging.getLogger('Browser').info('Security Warning Detected')
             try:
                 self.mechBrowser.select_form(nr=0)
                 self.mechBrowser.submit()
