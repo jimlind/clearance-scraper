@@ -2,13 +2,19 @@
 from colorama import Fore, Back, Style
 
 def success(seconds, proxyUrl):
-    message = Fore.GREEN + ' SUCCESS!' + Style.RESET_ALL + ' | '
-    message += Fore.WHITE + Back.GREEN + Style.BRIGHT + (' ' + seconds + 's ').ljust(12) + Style.RESET_ALL + ' | '
+    message = coloredText('GREEN', 'SUCCESS!') + ' | '
+    message += coloredBackground('GREEN', seconds + 's') + ' | '
     message += proxyUrl
     print message
 
 def failure(seconds, proxyUrl):
-    message = Fore.RED + ' FAILURE!' + Style.RESET_ALL + ' | '
-    message += Fore.WHITE + Back.RED + Style.BRIGHT + ('').ljust(12) + Style.RESET_ALL + ' | '
+    message = coloredText('RED', 'FAILURE!') + ' | '
+    message += coloredBackground('RED') + ' | '
     message += proxyUrl
     print message
+
+def coloredText(color, text, length = 8):
+    return getattr(Fore, color) + ' ' + text.ljust(length) + ' ' + Style.RESET_ALL
+
+def coloredBackground(color, text = '', length = 10):
+    return Fore.WHITE + getattr(Back, color) + Style.BRIGHT + ' ' + text.ljust(length) + ' ' + Style.RESET_ALL
