@@ -2,6 +2,7 @@
 import cookielib
 import logging
 import mechanize
+import multiprocessing
 import time
 import random
 
@@ -11,6 +12,7 @@ class Browser:
     check = ''
     mechBrowser = None
     courtesyTime = 2
+    browserTimeout = 10
 
     def __init__(self, proxyList, check):
         self.proxyList = proxyList
@@ -48,6 +50,28 @@ class Browser:
         proxyUrl = random.choice(self.proxyList) + '?b=24'
         logging.getLogger('Browser').info('Proxy Url : ' + proxyUrl)
 
+        parentPipe, childPipe = multiprocessing.Pipe()
+        process = multiprocessing.Process(
+            target=self.setSourceAttributeFromProxy,
+            args=(url, proxyUrl, childPipe)
+        )
+        process.start()
+
+        if parentPipe.poll(self.browserTimeout):
+            return parentPipe.recv()
+        else:
+            self.fail(proxyUrl, 'Timout Reached')
+            process.terminate()
+            process.join()
+            return False
+
+        if source:
+            return source
+
+        return False
+
+    def setSourceAttributeFromProxy(self, url, proxyUrl, pipe):
+        # Submit the form for the proxy
         try:
             self.mechBrowser.open(proxyUrl)
 
@@ -61,16 +85,20 @@ class Browser:
             self.mechBrowser.form['u'] = url
             self.mechBrowser.submit()
         except:
-            return self.fail(proxyUrl, 'Form Submission Failure')
+            self.fail(proxyUrl, 'Form Submission Failure')
+            return
 
+        # Get the source after form submission
         try:
             source = self.mechBrowser.response().get_data()
         except:
-            return self.fail(proxyUrl, 'Response Read Failure')
+            self.fail(proxyUrl, 'Response Read Failure')
+            return
 
         # Hack to compensate for XHTML etc
         self.mechBrowser._factory.is_html = True
 
+        # Submit the security warning form if found
         if 'Security Warning' == self.mechBrowser.title():
             logging.getLogger('Browser').info('Security Warning Detected')
             try:
@@ -79,15 +107,17 @@ class Browser:
                 response = self.mechBrowser.response()
                 source = response.get_data()
             except:
-                return self.fail(proxyUrl, 'Security Warning Override Failure')
+                self.fail(proxyUrl, 'Security Warning Override Failure')
+                return
 
+        # Check source for our keywords
         if (source.find(self.check) == -1):
-            return self.fail(proxyUrl, 'Source Verficiation Failure')
+            self.fail(proxyUrl, 'Source Verficiation Failure')
+            return
 
-        return source
+        pipe.send(source)
+        pipe.close()
 
     def fail(self, proxyUrl, message):
         logger = logging.getLogger('Browser')
         logger.warning(message + ' : ' + proxyUrl)
-
-        return False
