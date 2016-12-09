@@ -12,7 +12,7 @@ class Browser:
     check = ''
     mechBrowser = None
     courtesyTime = 2
-    browserTimeout = 10
+    browserTimeout = 45
 
     def __init__(self, proxyList, check):
         self.proxyList = proxyList
@@ -58,16 +58,13 @@ class Browser:
         process.start()
 
         if parentPipe.poll(self.browserTimeout):
-            return parentPipe.recv()
-        else:
-            self.fail(proxyUrl, 'Timout Reached')
-            process.terminate()
-            process.join()
-            return False
+            result = parentPipe.recv()
+            if isinstance(result, basestring):
+                process.terminate()
+                return result
 
-        if source:
-            return source
-
+        process.terminate()
+        self.fail(proxyUrl, 'Timout or Other Low Level Error Occured')
         return False
 
     def setSourceAttributeFromProxy(self, url, proxyUrl, pipe):
