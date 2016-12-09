@@ -6,7 +6,8 @@ PIDFILE=/var/local/scrape.pid
 # If the PID file is 3 hours old just delete it
 if test `find "$PIDFILE" -mmin +180`
 then
-    echo "PID is really old. Deleting it."
+    echo "PID is really old. Starting Fresh."
+    pkill -F $PIDFILE
     rm $PIDFILE
 fi
 
@@ -14,8 +15,7 @@ fi
 if [ -f $PIDFILE ]
 then
   PID=$(cat $PIDFILE)
-  ps -p $PID > /dev/null 2>&1
-  if [ $? -eq 0 ]
+  if ps -p $PID > /dev/null
   then
     echo "PID is active. Exiting early."
     exit 1
