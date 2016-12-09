@@ -21,11 +21,13 @@ class CategoryBuilder:
 
         link = soup.find('a', class_='js-next-page')
         if link is not None:
-            self.nextUrl = self.extractUrl(link)
-            return True
+            parsedUrl = self.extractUrl(link)
+            if (parsedUrl.find('http') == 0):
+                self.nextUrl = parsedUrl
+                return True
 
         return False
- 
+
     def process(self, href, link):
         self.database.upsertItem(link.get('data-sku'), href)
 
@@ -35,5 +37,5 @@ class CategoryBuilder:
     def extractUrl(self, link):
         urlTuple = urlparse.urlparse(link.get('href'))
         href = urlparse.parse_qs(urlTuple.query).get('u')[0]
-        
+
         return href
