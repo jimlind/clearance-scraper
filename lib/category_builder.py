@@ -35,7 +35,11 @@ class CategoryBuilder:
         return self.nextUrl
 
     def extractUrl(self, link):
-        urlTuple = urlparse.urlparse(link.get('href'))
+        rawHref = link.get('href')
+        if (rawHref.find('http') == 0):
+            return rawHref
+
+        urlTuple = urlparse.urlparse(rawHref)
         href = urlparse.parse_qs(urlTuple.query).get('u')[0]
 
         return href
