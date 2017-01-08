@@ -8,15 +8,15 @@ import random
 
 class Browser:
 
-    proxyList = []
     check = ''
     mechBrowser = None
-    courtesyTime = 2
-    browserTimeout = 45
+    logger = None
+    courtesyTime = 60
+    browserTimeout = 30
 
-    def __init__(self, proxyList, check):
-        self.proxyList = proxyList
+    def __init__(self, check):
         self.check = check
+        self.logger = logging.getLogger('Browser')
 
     def setup(self):
         self.mechBrowser = mechanize.Browser()
@@ -39,21 +39,13 @@ class Browser:
         time.sleep(self.courtesyTime + random.randint(1, self.courtesyTime))
 
     def getSource(self, url):
-        logging.getLogger('Browser').info('Scraping URL : ' + url)
-        while (True):
-            self.sleep()
-            source = self.getSourceOrFalse(url)
-            if (False != source):
-                return source
-
-    def getSourceOrFalse(self, url):
-        proxyUrl = random.choice(self.proxyList) + '?b=24'
-        logging.getLogger('Browser').info('Proxy Url : ' + proxyUrl)
+        self.sleep()
+        self.logger.info('Scraping URL : ' + url)
 
         parentPipe, childPipe = multiprocessing.Pipe()
         process = multiprocessing.Process(
-            target=self.setSourceAttributeFromProxy,
-            args=(url, proxyUrl, childPipe)
+            target = self.writeSourceToPipe,
+            args = (url, childPipe)
         )
         process.start()
 
@@ -64,57 +56,21 @@ class Browser:
                 return result
 
         process.terminate()
-        self.fail(proxyUrl, 'Timout or Other Low Level Error Occured')
+        self.logger.warning('Timout or Other Low Level Error Occured')
         return False
 
-    def setSourceAttributeFromProxy(self, url, proxyUrl, pipe):
-        # Submit the form for the proxy
+    def writeSourceToPipe(self, url, pipe):
         try:
-            self.mechBrowser.open(proxyUrl)
-
-            formCount = 0
-            for form in self.mechBrowser.forms():
-                if (str(form.attrs['action']).find('process.php?') > 0):
-                    break
-                formCount = formCount+1
-            self.mechBrowser.select_form(nr=formCount)
-
-            self.mechBrowser.form['u'] = url
-            self.mechBrowser.submit()
-        except:
-            self.fail(proxyUrl, 'Form Submission Failure')
-            return
-
-        # Get the source after form submission
-        try:
+            self.mechBrowser.open(url)
             source = self.mechBrowser.response().get_data()
         except:
-            self.fail(proxyUrl, 'Response Read Failure')
+            self.logger.warning('Response Read Failure')
             return
-
-        # Hack to compensate for XHTML etc
-        self.mechBrowser._factory.is_html = True
-
-        # Submit the security warning form if found
-        if 'Security Warning' == self.mechBrowser.title():
-            logging.getLogger('Browser').info('Security Warning Detected')
-            try:
-                self.mechBrowser.select_form(nr=0)
-                self.mechBrowser.submit()
-                response = self.mechBrowser.response()
-                source = response.get_data()
-            except:
-                self.fail(proxyUrl, 'Security Warning Override Failure')
-                return
 
         # Check source for our keywords
         if (source.find(self.check) == -1):
-            self.fail(proxyUrl, 'Source Verficiation Failure')
+            self.logger.warning('Source Verficiation Failure')
             return
 
         pipe.send(source)
         pipe.close()
-
-    def fail(self, proxyUrl, message):
-        logger = logging.getLogger('Browser')
-        logger.warning(message + ' : ' + proxyUrl)
