@@ -21,9 +21,12 @@ class Product:
         self.productUrl = soup.get('href')
         self.productSku = soup.get('data-sku')
 
-        # Get image URL and drop any weird characters/encoding
-        image = soup.select_one('img.SbProductBlock-image')
-        self.productImageUrl = image.get('src').encode('ascii', 'ignore')
+        # Get first valid image URL and dropping weird characters/encoding
+        for image in soup.select('img.SbProductBlock-image'):
+            src = image.get('src').encode('ascii', 'ignore')
+            if src.find('http') == 0:
+                self.productImageUrl = src
+                break
 
         name = soup.select_one('div.sb_names')
         self.productName = name.get('title')
