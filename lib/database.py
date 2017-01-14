@@ -41,7 +41,12 @@ class Database:
             VALUES
             (:sku, :url, :time, (SELECT previous_time FROM catalog WHERE sku = :sku))"""
         self.cursor.execute(command, {"sku": sku, "url": url, "time":self.time})
-        self.connection.commit() 
+        self.connection.commit()
+
+    def skuExists(self, sku):
+        command = "SELECT sku FROM catalog WHERE sku = :sku"
+        self.cursor.execute(command, {"sku": sku})
+        return self.cursor.fetchone() is not None
 
     def getNewUrlList(self):
         select = "SELECT url FROM catalog WHERE previous_time IS NULL"
