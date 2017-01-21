@@ -23,13 +23,13 @@ class Product:
 
         # Get first valid image URL and dropping weird characters/encoding
         for image in soup.select('img.SbProductBlock-image'):
-            src = image.get('src').encode('ascii', 'ignore')
+            src = self.cleanString(image.get('src'))
             if src.find('http') == 0:
                 self.productImageUrl = src
                 break
 
-        name = soup.select_one('div.sb_names')
-        self.productName = name.get('title')
+        name = soup.select_one('p.sb_prod_name')
+        self.productName = name.get_text().strip()
 
         # Get price make sure it looks like real money
         price = soup.find('span', attrs={'data-price': True})
@@ -52,25 +52,31 @@ class Product:
             self.productReviews = ' '.join(reviewText.split())
 
     def getProductUrl(self):
-        return self.productUrl
+        return self.cleanString(self.productUrl)
 
     def getProductImageUrl(self):
-        return self.productImageUrl
+        return self.cleanString(self.productImageUrl)
 
     def getProductName(self):
-        return self.productName
+        return self.cleanString(self.productName)
 
     def getProductSku(self):
-        return self.productSku
+        return self.cleanString(self.productSku)
 
     def getProdutFeatureList(self):
         return self.productFeatureList
 
     def getProductPrice(self):
-        return self.productPrice
+        return self.cleanString(self.productPrice)
 
     def getProductStars(self):
-        return self.productStars
+        return self.cleanString(self.productStars)
 
     def getProductReviews(self):
-        return self.productReviews
+        return self.cleanString(self.productReviews)
+
+    def cleanString(self, input):
+        if input is None:
+            return ''
+        else:
+            return input.encode('ascii', 'ignore')
