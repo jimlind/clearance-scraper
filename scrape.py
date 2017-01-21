@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import util.logger
+import time
 
 from ConfigParser import ConfigParser
 from lib.browser import Browser
@@ -14,13 +15,18 @@ util.logger.setupWarning();
 config = ConfigParser()
 config.read('settings.cfg')
 
-browser = Browser(config.get('site', 'check'))
+browser = Browser(
+    int(config.get('browser', 'courtesyTime')),
+    config.get('browser', 'agent'),
+    config.get('site', 'check')
+)
 database = Database(config.get('db', 'path') + config.get('db', 'file'))
 database.updateTime()
 
 telegramBot = Bot(token = config.get('bot', 'token'))
 chatId = config.get('bot', 'chat')
 url = config.get('site', 'start')
+categoryCount = 0
 
 nextCategoryAvailable = True
 while nextCategoryAvailable:
@@ -29,9 +35,9 @@ while nextCategoryAvailable:
     browser.shutdown()
 
     categoryPage = CategoryPage(source)
-    for product in categoryPage.getProductList():
+    productList = categoryPage.getProductList()
+    for product in productList:
         previouslyExisted = database.skuExists(product.getProductSku())
-        database.upsertItem(product.getProductSku(), product.getProductUrl())
         if (previouslyExisted):
             continue
 
@@ -46,10 +52,16 @@ while nextCategoryAvailable:
 
         message += product.getProductStars() + u' \u2606 ' + product.getProductReviews()
         telegramBot.sendMessage(chat_id=chatId, text=message)
+        time.sleep(2)
+
+    for product in productList:
+        database.upsertItem(product.getProductSku(), product.getProductUrl())
 
     url = categoryPage.getNextUrl()
     if ('' == url):
         nextCategoryAvailable = False
+
+    categoryCount += 1
 
 # database.cleanOldItems()
 reportData = database.report()
@@ -57,5 +69,6 @@ reportData = database.report()
 message = 'Scrape Complete!\n'
 message += str(reportData[0]) + ' New Products Found\n'
 message += str(reportData[1]) + ' Products Avaiable\n'
-message += str(reportData[2]) + ' Products Eliglble for Delete'
+message += str(reportData[2]) + ' Products Eligible for Delete\n'
+message += str(categoryCount) + ' Pages Scraped'
 telegramBot.sendMessage(chat_id=chatId, text=message)
