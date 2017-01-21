@@ -8,13 +8,16 @@ import random
 
 class Browser:
 
+    courtesyTime = 0
+    agent = ''
     check = ''
     mechBrowser = None
     logger = None
-    courtesyTime = 60
     browserTimeout = 30
 
-    def __init__(self, check):
+    def __init__(self, courtesyTime, agent, check):
+        self.courtesyTime = courtesyTime
+        self.agent = agent
         self.check = check
         self.logger = logging.getLogger('Browser')
 
