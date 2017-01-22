@@ -73,6 +73,6 @@ reportData = database.report()
 message = 'Scrape Complete!\n'
 message += str(reportData[0]) + ' New Products Found\n'
 message += str(reportData[1]) + ' Total Products Found\n'
-message += str(reportData[2]) + ' Products Eligible for Delete\n'
+message += str(reportData[2]) + ' Existing Products Not Updated\n'
 message += str(categoryCount) + ' Pages Scraped'
 telegramBot.sendMessage(chat_id=chatId, text=message)
