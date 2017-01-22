@@ -7,8 +7,8 @@ PIDFILE=/var/local/scrape.pid
 if test `find "$PIDFILE" -mmin +180`
 then
     echo "PID is really old. Starting Fresh."
-    pkill -F $PIDFILE
-    rm $PIDFILE
+    # pkill -F $PIDFILE
+    # rm $PIDFILE
 fi
 
 # If the PID file exists exit early
@@ -25,5 +25,5 @@ fi
 # Write the PID to the file and start the script
 echo $$ > $PIDFILE
 cd $(dirname "$0")
-python scrape.py
+python scrape.py $1
 rm $PIDFILE
