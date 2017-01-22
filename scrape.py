@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import util.logger
 import time
+import sys
 
 from ConfigParser import ConfigParser
 from lib.browser import Browser
@@ -8,15 +9,18 @@ from lib.category_page import CategoryPage
 from lib.database import Database
 from telegram import Bot
 
-
 # Setup debug logging
 util.logger.setupWarning();
 
 config = ConfigParser()
 config.read('settings.cfg')
 
+# Allow config overrides passed as arguments
+if 2 == len(sys.argv):
+    config.read(sys.argv[1])
+
 browser = Browser(
-    int(config.get('browser', 'courtesyTime')),
+    config.getint('browser', 'courtesyTime'),
     config.get('browser', 'agent'),
     config.get('site', 'check')
 )
@@ -68,7 +72,7 @@ reportData = database.report()
 
 message = 'Scrape Complete!\n'
 message += str(reportData[0]) + ' New Products Found\n'
-message += str(reportData[1]) + ' Products Avaiable\n'
+message += str(reportData[1]) + ' Total Products Found\n'
 message += str(reportData[2]) + ' Products Eligible for Delete\n'
 message += str(categoryCount) + ' Pages Scraped'
 telegramBot.sendMessage(chat_id=chatId, text=message)
