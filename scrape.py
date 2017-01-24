@@ -32,6 +32,9 @@ chatId = config.get('bot', 'chat')
 url = config.get('site', 'start')
 categoryCount = 0
 
+message = config.get('scrape', 'title') + ' Started!'
+telegramBot.sendMessage(chat_id=chatId, text=message)
+
 nextCategoryAvailable = True
 while nextCategoryAvailable:
     browser.setup()
