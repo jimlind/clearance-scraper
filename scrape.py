@@ -70,7 +70,7 @@ while nextCategoryAvailable:
 
     categoryCount += 1
 
-# database.cleanOldItems()
+database.cleanOldItems()
 reportData = database.report()
 
 message = 'Scrape Complete!\n'

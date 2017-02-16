@@ -54,9 +54,10 @@ class Database:
         return self.cursor.fetchall()
 
     def cleanOldItems(self):
-        # 2 days ago
-        oldestTime = int(time.time()) - (48 * 60 * 60)
+        # 4 days ago
+        oldestTime = int(time.time()) - (4 * 24 * 60 * 60)
         command = "DELETE FROM catalog WHERE latest_time < :oldestTime"
+
         self.cursor.execute(command, {"oldestTime": oldestTime})
         self.connection.commit()
 
