@@ -48,8 +48,12 @@ while nextCategoryAvailable:
         if (previouslyExisted):
             continue
 
-        if (product.getProductImageUrl().find('data:image') != 0):
-            telegramBot.sendPhoto(chat_id = chatId, photo = product.getProductImageUrl())
+        imageUrl = product.getProductImageUrl()
+        try:
+            telegramBot.sendPhoto(chat_id = chatId, photo = imageUrl)
+        except:
+            message = 'Failed to Send Photo: ' + imageUrl
+            telegramBot.sendMessage(chat_id=chatId, text=message)
 
         message = product.getProductUrl() + '\n\n'
         message += product.getProductName() + '\n'
@@ -69,13 +73,18 @@ while nextCategoryAvailable:
         nextCategoryAvailable = False
 
     categoryCount += 1
+    if (0 == (categoryCount % 10)):
+        message = 'Page ' + str(categoryCount) + ' Completed\n'
+        telegramBot.sendMessage(chat_id=chatId, text=message)
 
-database.cleanOldItems()
+
 reportData = database.report()
+cleanData = database.cleanOldItems()
 
 message = 'Scrape Complete!\n'
 message += str(reportData[0]) + ' New Products Found\n'
 message += str(reportData[1]) + ' Total Products Found\n'
 message += str(reportData[2]) + ' Existing Products Not Updated\n'
-message += str(categoryCount) + ' Pages Scraped'
+message += str(categoryCount) + ' Pages Scraped\n'
+message += str(cleanData) + ' Old Products Deleted'
 telegramBot.sendMessage(chat_id=chatId, text=message)
