@@ -31,9 +31,7 @@ class Browser:
         self.mechBrowser.set_handle_referer(True)
         self.mechBrowser.set_handle_robots(False)
         self.mechBrowser.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
-
-        agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:48.0) Gecko/20100101 Firefox/48.0'
-        self.mechBrowser.addheaders = [('User-agent', agent)]
+        self.mechBrowser.addheaders = [('User-agent', self.agent)]
 
     def shutdown(self):
         self.mechBrowser.close()
@@ -60,7 +58,7 @@ class Browser:
 
         process.terminate()
         self.logger.warning('Timout or Other Low Level Error Occured')
-        return False
+        return ''
 
     def writeSourceToPipe(self, url, pipe):
         try:
