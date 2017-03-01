@@ -60,6 +60,7 @@ class Database:
 
         self.cursor.execute(command, {"oldestTime": oldestTime})
         self.connection.commit()
+        return self.cursor.rowcount
 
     def report(self):
         command = """SELECT
