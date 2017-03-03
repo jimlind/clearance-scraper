@@ -63,7 +63,7 @@ while nextCategoryAvailable:
 
         message += product.getProductStars() + u' \u2606 ' + product.getProductReviews()
         telegramBot.sendMessage(chat_id=chatId, text=message)
-        time.sleep(2)
+        time.sleep(1)
 
     for product in productList:
         database.upsertItem(product.getProductSku(), product.getProductUrl())
